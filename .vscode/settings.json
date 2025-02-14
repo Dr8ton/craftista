@@ -1,0 +1,7 @@
+{
+    "terminal.integrated.env.osx": {
+        "CW_NEW_SESSION": "1",
+        "FIG_NEW_SESSION": "1",
+        "Q_NEW_SESSION": "1"
+    }
+}
