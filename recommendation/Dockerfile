@@ -1,5 +1,5 @@
 # Stage 1: Build the Go application
-FROM golang:1.20-alpine AS builder
+FROM golang:1.22-alpine AS builder
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
@@ -13,6 +13,9 @@ RUN go mod download
 # Copy the entire source code
 COPY . .
 
+# Run tests
+RUN go test ./...
+
 # Build the Go application
 RUN go build -o app .
 
@@ -25,11 +28,11 @@ RUN apk --no-cache add ca-certificates
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the built application from the builder stage
-COPY --from=builder /usr/src/app /app/
+# Copy ONLY the compiled binary from the builder stage
+COPY --from=builder /usr/src/app/app /app/app
 
 # Expose port 8080
 EXPOSE 8080
 
 # Set the command to run the application
-CMD ["./app"]
+ENTRYPOINT ["/app/app"]Natural Grocers"
