@@ -33,6 +33,12 @@ jobs:
           docker push $DOCKER_IMAGE:$IMAGE_TAG
           echo "Candidate image built and pushed: $DOCKER_IMAGE:$IMAGE_TAG"
 
+
+
+# This is set up as two steps and seems redundant. 
+# the purpose is so that in the furture we can have a TEST env set up
+# the Canidate image could be on the TEST env and the LATEST could be on PROD. 
+
   promote_image:
     runs-on: ubuntu-latest
     needs: build_and_push_candidate # Only promote if tests passed
