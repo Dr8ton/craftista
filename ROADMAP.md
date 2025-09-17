@@ -10,6 +10,7 @@ This document outlines the development roadmap for the Craftista project. The ro
 
   **General**
   *   [ ] Create a `docker-compose.yml` file to orchestrate the services for local development.
+  *   [ ] Set up `act` cli tool for testing GH Actions locally. 
 
   **Catalogue Service**
   *   [x] Create a `Dockerfile`.
