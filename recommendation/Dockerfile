@@ -35,4 +35,4 @@ COPY --from=builder /usr/src/app/app /app/app
 EXPOSE 8080
 
 # Set the command to run the application
-ENTRYPOINT ["/app/app"]Natural Grocers"
+ENTRYPOINT ["/app/app"]
