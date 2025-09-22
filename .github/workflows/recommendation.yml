@@ -1,0 +1,68 @@
+# .github/workflows/recommendation.yml
+name: Recommendation App CI/CD
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    paths:
+      - 'recommendation/**'
+      - '.github/workflows/recommendation.yml'
+
+jobs:
+  build_and_push_candidate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Debbuging
+        run: echo "${{toJson(github)}}"
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+
+      - name: Build and Push Candidate Docker Image
+        # Use GITHUB_SHA as a unique candidate tag
+        env:
+          DOCKER_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/craftista-recommendation 
+          IMAGE_TAG: ${{ github.sha }}-candidate
+        run: |
+          docker build -t $DOCKER_IMAGE:$IMAGE_TAG \
+                       -f recommendation/Dockerfile \
+                       recommendation/
+          docker push $DOCKER_IMAGE:$IMAGE_TAG
+          echo "Candidate image built and pushed: $DOCKER_IMAGE:$IMAGE_TAG"
+
+
+# This is set up as two steps. 
+# the purpose is so that in the furture we can have a TEST env set up
+# the Canidate image could be on the TEST env and the LATEST could be on PROD. 
+
+  promote_image:
+    runs-on: ubuntu-latest
+    needs: build_and_push_candidate # Only promote if tests passed
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    steps:
+      - name: Log in to Docker Hub
+        run: |
+          echo "${{ secrets.DOCKER_HUB_TOKEN }}" | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
+
+      - name: Promote Docker Image (Pull, Re-tag, Push)
+        env:
+          CANDIDATE_TAG: ${{ github.sha }}-candidate
+          PRODUCTION_TAGS: "latest,${{ github.sha }}" # Comma separated for multiple tags
+          DOCKER_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/craftista-recommendation 
+        run: |
+          echo "Promoting image: $DOCKER_IMAGE:$CANDIDATE_TAG"
+          docker pull $DOCKER_IMAGE:$CANDIDATE_TAG # Pull the candidate image
+
+          IFS=',' read -ra ADDR <<< "$PRODUCTION_TAGS" # Split tags by comma
+          for tag in "${ADDR[@]}"; do
+            echo "Tagging and pushing $DOCKER_IMAGE:$tag"
+            docker tag $DOCKER_IMAGE:$CANDIDATE_TAG $DOCKER_IMAGE:$tag # Re-tag
+            docker push $DOCKER_IMAGE:$tag # Push new tag
+          done
+          echo "Image promoted successfully."
