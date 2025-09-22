@@ -33,10 +33,6 @@ This document outlines the development roadmap for the Craftista project. The ro
 
   **General**
   *   [ ] Configure workflows to build and push Docker images to a container registry on every push or pull request to the `main` branch.
-  *   [ ] **Next Step (2025-09-17):** Activate the GitHub Actions step debugger to get more verbose logs for troubleshooting.
-      *   **To do:** Create a repository secret named `ACTIONS_STEP_DEBUG` with the value `true`.
-      *   **CLI Method:** `gh secret set ACTIONS_STEP_DEBUG --body "true"`
-      *   **UI Method:** Go to repository **Settings** > **Secrets and variables** > **Actions**, then create a new repository secret.
 
   **Catalogue Service**
   *   [ ] Set up a GitHub Actions workflow to build and test the service.
