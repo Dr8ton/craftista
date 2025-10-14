@@ -4,7 +4,7 @@ name: Recommendation App CI/CD
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     paths:
       - 'recommendation/**'
@@ -16,7 +16,6 @@ jobs:
     steps:
       - name: Debbuging
         run: echo "${{toJson(github)}}"
-
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -44,7 +43,7 @@ jobs:
   promote_image:
     runs-on: ubuntu-latest
     needs: build_and_push_candidate # Only promote if tests passed
-    if: github.event_name == 'push' && github.ref == 'refs/head/master'
+    if: github.event_name == 'push' && github.ref == 'refs/head/main'
     steps:
       - name: Log in to Docker Hub
         run: |
