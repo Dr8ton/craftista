@@ -30,7 +30,7 @@ WORKDIR /app
 
 # Copy ONLY the compiled binary from the builder stage
 COPY --from=builder /usr/src/app/app /app/app
-
+COPY --from=builder /usr/src/app/templates /app/templates
 # Expose port 8080
 EXPOSE 8080
 
