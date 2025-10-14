@@ -1,3 +1,5 @@
+package com.example.voting.controller;
+
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
