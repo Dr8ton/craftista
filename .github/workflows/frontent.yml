@@ -1,5 +1,5 @@
-# .github/workflows/recommendation.yml
-name: Recommendation App CI/CD
+# .github/workflows/frontend.yml
+name: frontend App CI/CD
 
 on:
   push:
@@ -7,15 +7,15 @@ on:
       - main
   pull_request:
     paths:
-      - 'recommendation/**'
-      - '.github/workflows/recommendation.yml'
+      - 'frontend/**'
+      - '.github/workflows/frontend.yml'
 
 jobs:
   build_and_push_candidate:
     runs-on: ubuntu-latest
     steps:
-      - name: Debbuging
-        run: echo "${{toJson(github)}}"
+      # - name: Debbuging
+      #   run: echo "${{toJson(github)}}"
 
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,12 +27,12 @@ jobs:
       - name: Build and Push Candidate Docker Image
         # Use GITHUB_SHA as a unique candidate tag
         env:
-          DOCKER_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/craftista-recommendation 
+          DOCKER_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/craftista-frontend 
           IMAGE_TAG: ${{ github.sha }}-candidate
         run: |
           docker build -t $DOCKER_IMAGE:$IMAGE_TAG \
-                       -f recommendation/Dockerfile \
-                       recommendation/
+                       -f frontend/Dockerfile \
+                       frontend/
           docker push $DOCKER_IMAGE:$IMAGE_TAG
           echo "Candidate image built and pushed: $DOCKER_IMAGE:$IMAGE_TAG"
 
@@ -54,7 +54,7 @@ jobs:
         env:
           CANDIDATE_TAG: ${{ github.sha }}-candidate
           PRODUCTION_TAGS: "latest,${{ github.sha }}" # Comma separated for multiple tags
-          DOCKER_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/craftista-recommendation 
+          DOCKER_IMAGE: ${{ secrets.DOCKER_HUB_USERNAME }}/craftista-frontend 
         run: |
           echo "Promoting image: $DOCKER_IMAGE:$CANDIDATE_TAG"
           docker pull $DOCKER_IMAGE:$CANDIDATE_TAG # Pull the candidate image
