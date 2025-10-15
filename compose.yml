@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  frontend:
+    build: frontend/.
+    ports:
+      - "3000:3000"
+    depends_on:
+      voting:
+        condition: service_healthy
+  recommendation:
+    build: recommendation/.
+    ports:
+      - "8080:8080"
+  voting:
+    build: voting/.
+    ports:
+      - "8081:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  catalogue:
+    build: catalogue/.
+    ports:
+     - "5001:5000"
