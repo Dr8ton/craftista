@@ -14,7 +14,7 @@ This document outlines the development roadmap for the Craftista project. The ro
 **Tasks:**
 
   **General**
-  *   [ ] Create a `docker-compose.yml` file to orchestrate the services for local development.
+  *   [x] Create a `docker-compose.yml` file to orchestrate the services for local development.
   *   [x] Set up `act` cli tool for testing GH Actions locally. 
 
   **Catalogue Service**
@@ -42,19 +42,19 @@ This document outlines the development roadmap for the Craftista project. The ro
 **Tasks:**
 
   **General**
-  *   [ ] Configure workflows to build and push Docker images to a container registry on every push or pull request to the `main` branch.
+  *   [x] Configure workflows to build and push Docker images to a container registry on every push or pull request to the `main` branch.
 
   **Catalogue Service**
-  *   [ ] Set up a GitHub Actions workflow to build and test the service.
+  *   [x] Set up a GitHub Actions workflow to build and test the service.
 
   **Frontend Service**
-  *   [ ] Set up a GitHub Actions workflow to build and test the service.
+  *   [x] Set up a GitHub Actions workflow to build and test the service.
 
   **Recommendation Service**
-  *   [ ] Set up a GitHub Actions workflow to build and test the service.
+  *   [x] Set up a GitHub Actions workflow to build and test the service.
 
   **Voting Service**
-  *   [ ] Set up a GitHub Actions workflow to build and test the service.
+  *   [x] Set up a GitHub Actions workflow to build and test the service.
 
 ## Phase 3: Container Registry
 
@@ -68,19 +68,19 @@ This document outlines the development roadmap for the Craftista project. The ro
 **Tasks:**
 
   **General**
-  *   [ ] Configure the CI/CD pipeline to authenticate with Docker Hub.
+  *   [x] Configure the CI/CD pipeline to authenticate with Docker Hub.
 
   **Catalogue Service**
-  *   [ ] Create a Docker Hub repository and configure the pipeline to push the image.
+  *   [x] Create a Docker Hub repository and configure the pipeline to push the image.
 
   **Frontend Service**
-  *   [ ] Create a Docker Hub repository and configure the pipeline to push the image.
+  *   [x] Create a Docker Hub repository and configure the pipeline to push the image.
 
   **Recommendation Service**
-  *   [ ] Create a Docker Hub repository and configure the pipeline to push the image.
+  *   [x] Create a Docker Hub repository and configure the pipeline to push the image.
 
   **Voting Service**
-  *   [ ] Create a Docker Hub repository and configure the pipeline to push the image.
+  *   [x] Create a Docker Hub repository and configure the pipeline to push the image.
 
 ## Phase 4: Cloud Deployment
 
