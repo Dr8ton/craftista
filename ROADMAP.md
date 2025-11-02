@@ -283,3 +283,9 @@ This document outlines the development roadmap for the Craftista project. The ro
 
 **Definition of Done:**
 * LitmusChaos is used to conduct chaos engineering experiments to test the resilience of the infrastructure.
+### Implement HTTPS/TLS
+**Goal:** Secure the frontend service by implementing HTTPS.
+**Definition of Done:**
+* A TLS certificate is provisioned (e.g., using Let's Encrypt or AWS Certificate Manager).
+* The frontend service listens on port 443 for HTTPS traffic.
+* HTTP traffic on port 80 is redirected to HTTPS.
