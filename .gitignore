@@ -3,3 +3,5 @@
 # Terraform state and variables
 terraform/terraform.tfvars
 terraform/.terraform
+*.tfstate
+*.tfstate.backup
