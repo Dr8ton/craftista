@@ -80,16 +80,29 @@ usermod -aG docker ubuntu
 ```
 
 ### 4. Security Groups (Instance Firewalls)
-Two security groups will be created: one for the frontend and one for the shared backend services.
+Three security groups will be created: one for the public bastion host, one for the frontend, and one for the shared backend services.
+
+- **`sg-bastion`:**
+  - **Purpose:** To control traffic for the bastion host EC2 instance.
+  - **Inbound Rules:**
+    - **Type:** SSH
+    - **Protocol:** TCP
+    - **Port:** 22
+    - **Source:** `0.0.0.0/0` (For this project. In production, this should be restricted to a specific IP.)
 
 - **`sg-frontend`:**
   - **Purpose:** To control traffic for the `frontend` EC2 instance.
   - **Inbound Rules:**
-    - **Type:** HTTP
-    - **Protocol:** TCP
-    - **Port:** 80
-    - **Source:** `0.0.0.0/0` (Allows web traffic from anywhere on the internet)
-  - **Default Outbound:** Allow all (This is the default and can be left as is).
+    - **Rule 1 (HTTP):**
+      - **Type:** HTTP
+      - **Protocol:** TCP
+      - **Port:** 80
+      - **Source:** `0.0.0.0/0` (Allows web traffic from anywhere on the internet)
+    - **Rule 2 (SSH):**
+      - **Type:** SSH
+      - **Protocol:** TCP
+      - **Port:** 22
+      - **Source:** `sg-bastion` (Allows SSH traffic only from the bastion host)
 
 - **`sg-backend`:**
   - **Purpose:** To control traffic for the `catalogue`, `recommendation`, and `voting` EC2 instances.
@@ -109,6 +122,11 @@ Two security groups will be created: one for the frontend and one for the shared
       - **Protocol:** TCP
       - **Port:** 8081
       - **Source:** `sg-frontend` (Allows traffic only from the frontend instance)
+    - **Rule 4 (SSH):**
+      - **Type:** SSH
+      - **Protocol:** TCP
+      - **Port:** 22
+      - **Source:** `sg-bastion` (Allows SSH traffic only from the bastion host)
   - **Default Outbound:** Allow all (This is the default and allows the instances to talk to each other and, via the NAT Gateway, the internet).
 
 ---
@@ -178,3 +196,48 @@ This phase outlines a future goal for automating the deployment of the infrastru
 
 **Progress Note:**
 As of October 21, 2025, Phase 1: Network Foundation has been fully defined in the Terraform configuration files (`terraform/`). The next step is to run `terraform init` and `terraform plan` from within the `terraform/` directory to validate the configuration.
+
+---
+
+**Progress Note (October 24, 2025):**
+
+Today, we successfully implemented and validated Phase 1. The key activities and concepts covered were:
+
+*   **Secure Credential Management:**
+    *   Initially explored using environment variables (`source .secrets`).
+    *   Pivoted to a more secure and explicit method for Terraform: using a `terraform.tfvars` file to hold secrets.
+    *   Updated `.gitignore` to exclude `*.tfvars`, `*.tfstate`, and `*.tfstate.backup` files to prevent committing secrets and state.
+
+*   **Terraform Core Workflow:**
+    *   **`terraform init`**: Initialized the project, downloading the AWS provider. Discussed the `.terraform.lock.hcl` file and its role in ensuring dependency consistency.
+    *   **`terraform plan`**: Generated an execution plan to preview changes.
+    *   **`terraform apply`**: Successfully applied the plan, creating the VPC, subnets, Internet Gateway, NAT Gateway, and route tables in AWS.
+    *   **`terraform destroy`**: Successfully destroyed all created resources to manage costs while development on Phase 2 is pending. The NAT Gateway was identified as the primary hourly cost.
+
+*   **State & Verification:**
+    *   **`terraform.tfstate`**: Learned that this file is Terraform's "memory," mapping the code to real-world resources.
+    *   **`terraform show`**: Used this command to inspect the state file and verify that all resources were gone after the destroy operation.
+    *   **Drift**: Discussed the concept of "drift" (when real-world state differs from Terraform's state) and how `terraform import` is used to bring existing resources under Terraform's management.
+
+**Next Step:** The project is in a clean state and is ready to begin implementing **Phase 2: Compute & Security**.
+
+---
+
+**Progress Note (October 26, 2025):**
+
+Today, we began implementing Phase 2, focusing on the security group configuration. Key activities included:
+
+*   **SSH Key Management:**
+    *   Generated a new SSH key pair (`craftista-key`) for accessing the EC2 instances.
+    *   Created a Terraform resource (`aws_key_pair`) to manage the public key within AWS, practicing Infrastructure as Code for credentials.
+
+*   **Security Group Best Practices:**
+    *   Learned the difference between inline and standalone security group rules.
+    *   Adopted the modern best practice of using standalone `aws_vpc_security_group_ingress_rule` and `aws_vpc_security_group_egress_rule` resources for clarity and to avoid dependency issues.
+
+*   **Implementing a Bastion Host:**
+    *   Pivoted from the original plan to incorporate a bastion host for improved security.
+    *   Created a new security group, `sg-bastion`, to allow SSH access from the internet.
+    *   Modified the `sg-frontend` and `sg-backend` security groups to only allow SSH access from the `sg-bastion` group, significantly reducing the attack surface.
+
+**Next Step:** The security group configuration is complete. The next step is to define the EC2 instances in Terraform, including the new bastion host.
