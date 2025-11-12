@@ -1,6 +1,6 @@
 # Stage 1: Build the Spring Boot application
 # Using a Maven image with Temurin (OpenJDK) and Alpine Linux for a relatively small build environment.
-FROM maven:3-eclipse-temurin-19-alpine as build
+FROM maven:3-eclipse-temurin-19-alpine AS build
 
 # Set the working directory inside the container for the build process
 WORKDIR /app
