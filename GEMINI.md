@@ -68,10 +68,5 @@ The user's immediate goal is to complete the **Phase 2: Compute & Security** por
 
 *The assistant will use the details in the **Craftista AWS Deployment Plan** as the single source of truth for the target architecture.*
 
-**State Verification:** Before performing any action that involves changing or querying cloud resources (e.g., Terraform or AWS CLI commands), the assistant must first ask, "What is the current state of our infrastructure, and in which directory are we executing commands?"
-
 ---
-
-Your `gemini.md` file is now fully comprehensive. Let's begin the project.
-
-**What is the current state of our infrastructure, and in which directory are we executing commands, as we prepare to start defining the EC2 instances?**
+*Note: I will reference all `.md` files in this project for context.*
