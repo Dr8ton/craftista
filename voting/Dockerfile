@@ -23,7 +23,7 @@ RUN mvn package -DskipTests
 # Stage 2: Create a smaller image for production runtime
 # Using a JRE-only Alpine image for a minimal runtime environment.
 # 'openjdk:19-alpine' typically provides just the JRE, which is sufficient for running a JAR.
-FROM openjdk:19-alpine
+FROM eclipse-temurin:19-jre-alpine
 
 # Set the working directory inside the container for the application
 WORKDIR /app
