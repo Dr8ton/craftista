@@ -129,6 +129,15 @@ Three security groups will be created: one for the public bastion host, one for 
       - **Source:** `sg-bastion` (Allows SSH traffic only from the bastion host)
   - **Default Outbound:** Allow all (This is the default and allows the instances to talk to each other and, via the NAT Gateway, the internet).
 
+### 5. VPC Flow Logs
+
+**Goal:** Configure VPC Flow Logs to capture information about the IP traffic going to and from network interfaces in our VPC. This is a critical tool for monitoring and troubleshooting network connectivity.
+
+**Components:**
+- **Log Destination:** We will use **Amazon CloudWatch Logs** as the destination for our flow log data.
+- **IAM Role:** A new IAM role will be created to grant the VPC Flow Logs service the necessary permissions to publish logs to CloudWatch.
+- **Flow Log Resource:** The `aws_flow_log` resource will be created to tie the VPC, IAM role, and CloudWatch Log Group together.
+
 ---
 
 ## Phase 3: Application Deployment
