@@ -11,6 +11,9 @@ apt-get install -y docker.io
 systemctl start docker
 systemctl enable docker
 usermod -aG docker ubuntu
+export VOTING_URL="http://${aws_instance.voting.private_ip}:8080"
+export CATALOGUE_URL="http://${aws_instance.catalogue.private_ip}:5000"
+export RECOMMENDATION_URL="http://${aws_instance.recommendation.private_ip}:8080"
 EOT
 
 
