@@ -249,4 +249,20 @@ Today, we began implementing Phase 2, focusing on the security group configurati
     *   Created a new security group, `sg-bastion`, to allow SSH access from the internet.
     *   Modified the `sg-frontend` and `sg-backend` security groups to only allow SSH access from the `sg-bastion` group, significantly reducing the attack surface.
 
-**Next Step:** The security group configuration is complete. The next step is to define the EC2 instances in Terraform, including the new bastion host.
+---
+
+**Progress Note (December 10, 2025):**
+
+After a break, work has resumed. The current status is:
+
+*   **Phase 2: Compute & Security is Complete:**
+    *   All Terraform configurations for Phase 1 (Networking) and Phase 2 (EC2 Instances, Security Groups, Key Pairs) have been written.
+    *   `terraform apply` was successfully executed, and all 29 infrastructure resources were created in AWS.
+    *   SSH connectivity to the private backend instances through the bastion host was verified after troubleshooting and documenting the `ssh-agent` forwarding process.
+
+*   **Phase 3: Application Deployment has Begun:**
+    *   We are now actively working on updating the `user-data` scripts for each EC2 instance to run the application containers.
+    *   The logic for the `frontend` instance to discover the backend services has been implemented in Terraform. The `user-data` for the `frontend` now correctly uses interpolation to inject the private IPs of the backend services as environment variables.
+
+**Next Step:** Complete the `user-data` scripts for all instances by adding the necessary `docker login`, `docker pull`, and `docker run` commands to start the application containers.
+
