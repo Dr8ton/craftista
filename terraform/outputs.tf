@@ -2,6 +2,10 @@ output "bastion_EIP" {
   description = "The static IP of the Bastion server. "
   value       = aws_eip.eip-bastion.public_ip
 }
+output "frontend_EIP" {
+  description = "The static IP of the Frontend tf server. "
+  value       = aws_eip.eip-frontend.public_ip
+}
 
 output "frontend_private_IP" {
   description = "The internal IP of the Frontend server. "
