@@ -12,6 +12,7 @@ apt-get install -y docker.io
 systemctl start docker
 systemctl enable docker
 usermod -aG docker ubuntu
+docker run -d -p 8080:8080 --restart unless-stopped dr8ton/craftista-recommendation
 EOT
 
 
