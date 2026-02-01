@@ -107,9 +107,9 @@ resource "aws_vpc_security_group_egress_rule" "egress_frontend_to_recommendation
 resource "aws_vpc_security_group_egress_rule" "egress_frontend_to_voting" {
   security_group_id            = aws_security_group.sg-frontend.id
   referenced_security_group_id = aws_security_group.sg-backend.id
-  from_port                    = 8081
+  from_port                    = 8080
   ip_protocol                  = "tcp"
-  to_port                      = 8081
+  to_port                      = 8080
 }
 
 # The next step is to define the three egress (outbound) rules for sg-frontend.
