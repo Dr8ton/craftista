@@ -4,9 +4,9 @@ const os = require('os');
 const fs = require('fs');
 const config = require('./config.json'); // Import configuration
 const app = express();
-const productsApiBaseUri = config.productsApiBaseUri;
-const recommendationBaseUri = config.recommendationBaseUri;
-const votingBaseUri = config.votingBaseUri;
+const productsApiBaseUri = process.env.CATALOGUE_URL || config.productsApiBaseUri;
+const recommendationBaseUri = process.env.RECOMMENDATION_URL || config.recommendationBaseUri;
+const votingBaseUri = process.env.VOTING_URL || config.votingBaseUri;
 const origamisRouter = require('./routes/origamis');
 
 app.set('view engine', 'ejs');
