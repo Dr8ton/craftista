@@ -112,13 +112,23 @@ resource "aws_vpc_security_group_egress_rule" "egress_frontend_to_voting" {
   to_port                      = 8080
 }
 
-# The next step is to define the three egress (outbound) rules for sg-frontend.
+# --- Ingress rules for backend services from frontend ---
 
-#   Let's start with the first one: allowing traffic to the catalogue service. The rule needs to:
-#    * Allow TCP traffic on port 5001.
-#    * Set the destination to the sg-backend security group.
+resource "aws_vpc_security_group_ingress_rule" "ingress_from_frontend_to_catalogue" {
+  description                  = "Allow traffic from frontend to catalogue service"
+  security_group_id            = aws_security_group.sg-backend.id
+  referenced_security_group_id = aws_security_group.sg-frontend.id
+  from_port                    = 5000
+  ip_protocol                  = "tcp"
+  to_port                      = 5000
+}
 
-#   The resource type will be aws_vpc_security_group_egress_rule.
-
-#   To specify the destination as another security group, you can't use cidr_ipv4. You need to use a different argument to reference the destination group's ID.
+resource "aws_vpc_security_group_ingress_rule" "ingress_from_frontend_to_backend_8080" {
+  description                  = "Allow traffic from frontend to recommendation and voting services"
+  security_group_id            = aws_security_group.sg-backend.id
+  referenced_security_group_id = aws_security_group.sg-frontend.id
+  from_port                    = 8080
+  ip_protocol                  = "tcp"
+  to_port                      = 8080
+}
 
