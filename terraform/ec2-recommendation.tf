@@ -7,6 +7,12 @@ resource "aws_instance" "recommendation" {
   subnet_id              = aws_subnet.private.id
   user_data              = <<EOT
 #!/bin/bash
+until curl -s --head http://www.google.com | head -n 1 | grep "200 OK" > /dev/null; do
+  echo "Waiting for network..."
+  sleep 5
+done
+
+echo "Network is up, proceeding with installation."
 apt-get update -y
 apt-get install -y docker.io
 systemctl start docker
