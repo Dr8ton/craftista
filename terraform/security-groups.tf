@@ -91,9 +91,9 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_outbound_from_bastion" 
 resource "aws_vpc_security_group_egress_rule" "egress_frontend_to_catalogue" {
   security_group_id            = aws_security_group.sg-frontend.id
   referenced_security_group_id = aws_security_group.sg-backend.id
-  from_port                    = 5001
+  from_port                    = 5000
   ip_protocol                  = "tcp"
-  to_port                      = 5001
+  to_port                      = 5000
 }
 
 resource "aws_vpc_security_group_egress_rule" "egress_frontend_to_recommendation" {
