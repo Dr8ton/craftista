@@ -18,7 +18,8 @@ apt-get install -y docker.io
 systemctl start docker
 systemctl enable docker
 usermod -aG docker ubuntu
-docker run -d -p 8080:8080 --restart unless-stopped dr8ton/craftista-voting
+export CATALOGUE_SERVICE_URL="http://${aws_instance.catalogue.private_ip}:5000/api/products"
+docker run -d -p 8080:8080 -e CATALOGUE_SERVICE_URL=$CATALOGUE_SERVICE_URL --restart unless-stopped dr8ton/craftista-voting
 EOT
 
 
