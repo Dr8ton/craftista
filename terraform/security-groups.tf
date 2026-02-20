@@ -1,17 +1,20 @@
+resource "aws_security_group" "backend-sgs" {
+  for_each    = var.backend_application_services
+  description = "Security Group for the ${each.key} service"
+  vpc_id      = aws_vpc.main.id
+
+  tags = {
+    Name = "sg-${each.key}"
+  }
+}
+
+
 resource "aws_security_group" "sg-frontend" {
   description = "Controls access to the Frontend."
   vpc_id      = aws_vpc.main.id
 
   tags = {
     Name = "sg-frontend"
-  }
-}
-resource "aws_security_group" "sg-backend" {
-  description = "Controls access to the Backend"
-  vpc_id      = aws_vpc.main.id
-
-  tags = {
-    Name = "sg-backend"
   }
 }
 
@@ -32,32 +35,6 @@ resource "aws_vpc_security_group_ingress_rule" "allow_http" {
   to_port           = 80
 }
 
-resource "aws_vpc_security_group_egress_rule" "allow_http_out" {
-    for_each = {
-    "frontend" = aws_security_group.sg-frontend.id,
-    "backend"  = aws_security_group.sg-backend.id
-  }
-  
-  security_group_id = each.value
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 80
-  ip_protocol       = "tcp"
-  to_port           = 80
-}
-resource "aws_vpc_security_group_egress_rule" "allow_https_out" {
-   for_each = {
-    "frontend" = aws_security_group.sg-frontend.id,
-    "backend"  = aws_security_group.sg-backend.id
-  }
-  
-   security_group_id = each.value
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 443
-  ip_protocol       = "tcp"
-  to_port           = 443 
-}
-
-
 resource "aws_vpc_security_group_ingress_rule" "allow_ssh" {
   security_group_id = aws_security_group.sg-bastion.id
   cidr_ipv4         = "0.0.0.0/0"
@@ -66,69 +43,95 @@ resource "aws_vpc_security_group_ingress_rule" "allow_ssh" {
   to_port           = 22
 }
 
-
-resource "aws_vpc_security_group_ingress_rule" "allow_ssh_in_from_bastion" {
-  for_each = {
-    "frontend" = aws_security_group.sg-frontend.id,
-    "backend"  = aws_security_group.sg-backend.id
-  }
-
-  security_group_id = each.value
-  cidr_ipv4         = "${aws_instance.bastion.private_ip}/32"
-  ip_protocol       = "tcp"
-  from_port         = 22
-  to_port           = 22
-
-}
-
 resource "aws_vpc_security_group_egress_rule" "allow_all_outbound_from_bastion" {
   security_group_id = aws_security_group.sg-bastion.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # This signifies all protocols
 }
 
-
-resource "aws_vpc_security_group_egress_rule" "egress_frontend_to_catalogue" {
+# Allow SSH from bastion to the static frontend SG
+resource "aws_vpc_security_group_ingress_rule" "allow_ssh_in_from_bastion_to_frontend" {
   security_group_id            = aws_security_group.sg-frontend.id
-  referenced_security_group_id = aws_security_group.sg-backend.id
-  from_port                    = 5000
+  referenced_security_group_id = aws_security_group.sg-bastion.id
   ip_protocol                  = "tcp"
-  to_port                      = 5000
+  from_port                    = 22
+  to_port                      = 22
 }
 
-resource "aws_vpc_security_group_egress_rule" "egress_frontend_to_recommendation" {
-  security_group_id            = aws_security_group.sg-frontend.id
-  referenced_security_group_id = aws_security_group.sg-backend.id
-  from_port                    = 8080
+# Allow SSH from bastion to all dynamic backend SGs
+resource "aws_vpc_security_group_ingress_rule" "allow_ssh_in_from_bastion_to_backend" {
+  for_each = aws_security_group.backend-sgs
+
+  security_group_id            = each.value.id
+  referenced_security_group_id = aws_security_group.sg-bastion.id
   ip_protocol                  = "tcp"
-  to_port                      = 8080
+  from_port                    = 22
+  to_port                      = 22
 }
 
-resource "aws_vpc_security_group_egress_rule" "egress_frontend_to_voting" {
-  security_group_id            = aws_security_group.sg-frontend.id
-  referenced_security_group_id = aws_security_group.sg-backend.id
-  from_port                    = 8080
-  ip_protocol                  = "tcp"
-  to_port                      = 8080
+resource "aws_vpc_security_group_egress_rule" "allow_http_out_from_frontend" {
+  security_group_id = aws_security_group.sg-frontend.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 80
+  ip_protocol       = "tcp"
+  to_port           = 80
+}
+resource "aws_vpc_security_group_egress_rule" "allow_https_out_from_frontend" {
+
+  security_group_id = aws_security_group.sg-frontend.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 443
+  ip_protocol       = "tcp"
+  to_port           = 443
 }
 
-# --- Ingress rules for backend services from frontend ---
+resource "aws_vpc_security_group_egress_rule" "allow_http_out_from_backend" {
 
-resource "aws_vpc_security_group_ingress_rule" "ingress_from_frontend_to_catalogue" {
-  description                  = "Allow traffic from frontend to catalogue service"
-  security_group_id            = aws_security_group.sg-backend.id
+  for_each          = aws_security_group.backend-sgs
+  security_group_id = each.value.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 80
+  ip_protocol       = "tcp"
+  to_port           = 80
+}
+resource "aws_vpc_security_group_egress_rule" "allow_https_out_from_backend" {
+  for_each          = aws_security_group.backend-sgs
+  security_group_id = each.value.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 443
+  ip_protocol       = "tcp"
+  to_port           = 443
+}
+resource "aws_vpc_security_group_ingress_rule" "allow_http_in_from_frontend_to_backend" {
+  for_each                     = var.backend_application_services
+  security_group_id            = aws_security_group.backend-sgs[each.key].id
   referenced_security_group_id = aws_security_group.sg-frontend.id
-  from_port                    = 5000
   ip_protocol                  = "tcp"
-  to_port                      = 5000
+  from_port                    = each.value.port
+  to_port                      = each.value.port
 }
 
-resource "aws_vpc_security_group_ingress_rule" "ingress_from_frontend_to_backend_8080" {
-  description                  = "Allow traffic from frontend to recommendation and voting services"
-  security_group_id            = aws_security_group.sg-backend.id
-  referenced_security_group_id = aws_security_group.sg-frontend.id
-  from_port                    = 8080
+resource "aws_vpc_security_group_egress_rule" "allow_http_out_from_frontend_to_backend" {
+  for_each                     = var.backend_application_services
+  security_group_id            = aws_security_group.sg-frontend.id
+  referenced_security_group_id = aws_security_group.backend-sgs[each.key].id
+  from_port                    = each.value.port
   ip_protocol                  = "tcp"
-  to_port                      = 8080
+  to_port                      = each.value.port
 }
 
+resource "aws_vpc_security_group_egress_rule" "allow_voting_out_to_catalogue" {
+  security_group_id            = aws_security_group.backend-sgs["voting"].id
+  referenced_security_group_id = aws_security_group.backend-sgs["catalogue"].id
+  ip_protocol                  = "tcp"
+  from_port                    = var.backend_application_services["catalogue"].port
+  to_port                      = var.backend_application_services["catalogue"].port
+}
+
+resource "aws_vpc_security_group_ingress_rule" "allow_catalogue_in_from_voting" {
+  security_group_id            = aws_security_group.backend-sgs["catalogue"].id
+  referenced_security_group_id = aws_security_group.backend-sgs["voting"].id
+  ip_protocol                  = "tcp"
+  from_port                    = var.backend_application_services["catalogue"].port
+  to_port                      = var.backend_application_services["catalogue"].port
+}
