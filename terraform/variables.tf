@@ -16,10 +16,10 @@ variable "aws_region" {
   default     = "us-east-1"
 }
 
-variable "application_services" {
+variable "backend_application_services" {
   description = "Defines all services to generate network rules and infrastructure."
   type = map(object({
-    port         = number
+    port = number
     egress_rules = list(object({
       key  = string
       port = number
@@ -40,6 +40,10 @@ variable "application_services" {
           port = 5000
         }
       ]
+    },
+    "recommendation" = {
+      port         = 8080
+      egress_rules = []
     }
   }
 }
