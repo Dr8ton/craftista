@@ -83,7 +83,7 @@ app.get('/api/service-status', async (req, res) => {
 });
 
 app.get('/recommendation-status', (req, res) => {
-    axios.get(config.recommendationBaseUri + '/api/recommendation-status')
+    axios.get(`${recommendationBaseUri}/api/recommendation-status`)
         .then(response => {
             res.json({status: "up", message: "Recommendation Service is Online"});
         })
@@ -93,7 +93,7 @@ app.get('/recommendation-status', (req, res) => {
 });
 
 app.get('/votingservice-status', (req, res) => {
-    axios.get(config.votingBaseUri + '/api/origamis')
+    axios.get(`${votingBaseUri}/api/origamis`)
         .then(response => {
             res.json({status: "up", message: "Voting Service is Online"});
         })
