@@ -3,7 +3,7 @@ resource "aws_instance" "voting" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = "t2.micro"
   key_name               = "craftista-key"
-  vpc_security_group_ids = [aws_security_group.backend-sgs["voting"]]
+  vpc_security_group_ids = [aws_security_group.backend-sgs["voting"].id]
   subnet_id              = aws_subnet.private.id
   user_data              = <<EOT
 #!/bin/bash
