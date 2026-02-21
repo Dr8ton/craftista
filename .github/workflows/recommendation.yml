@@ -14,9 +14,6 @@ jobs:
   build_and_push_candidate:
     runs-on: ubuntu-latest
     steps:
-      - name: Debbuging
-        run: echo "${{toJson(github)}}"
-
       - name: Checkout code
         uses: actions/checkout@v4
 
