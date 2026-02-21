@@ -104,7 +104,7 @@ app.get('/votingservice-status', (req, res) => {
 
 
 app.get('/daily-origami', (req, res) => {
-    axios.get(config.recommendationBaseUri + '/api/origami-of-the-day')
+    axios.get(`${recommendationBaseUri}/api/origami-of-the-day`)
         .then(response => {
             res.json(response.data);
         })
