@@ -1,18 +1,18 @@
 variable "ssh_key_name" {
   description = "The name of the .pem file in the ~/.ssh folder"
   type        = string
-  default     = "craftista-key" 
+  default     = "craftista-key"
 }
 
 locals {
-    
-    ssh_user = "ubuntu"
+
+  ssh_user = "ubuntu"
 
   craft_instances = {
     "frontend"       = aws_instance.frontend.private_ip
     "voting"         = aws_instance.voting.private_ip
     "recommendation" = aws_instance.recommendation.private_ip
-    "catalogue" = aws_instance.catalogue.private_ip
+    "catalogue"      = aws_instance.catalogue.private_ip
   }
 }
 
@@ -30,7 +30,7 @@ resource "local_file" "ssh_config" {
       UserKnownHostsFile /dev/null
 
     # The Craft Stack Shortcuts
-    %{ for name, ip in local.craft_instances ~}
+    %{for name, ip in local.craft_instances~}
     Host craft-${name}
       HostName ${ip}
       ProxyJump bastion
@@ -38,6 +38,6 @@ resource "local_file" "ssh_config" {
       IdentityFile ~/.ssh/${var.ssh_key_name}
       StrictHostKeyChecking no
       UserKnownHostsFile /dev/null
-    %{ endfor ~}
+    %{endfor~}
   EOT
 }
